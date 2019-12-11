@@ -6,7 +6,6 @@ gamestate.states = {}
 local null_func = function() end
 
 local function assign(dest, callbacks)
-    dest.init = callbacks.init or null_func
     dest.load = callbacks.load or null_func
     dest.unload = callbacks.unload or null_func
     dest.update = callbacks.update or null_func
@@ -19,11 +18,6 @@ end
 
 function gamestate.register(name, callbacks)
     local new_entry = {}
-
-    if callbacks.init then
-        init_func()
-    end
-
     assign(new_entry, callbacks)
     gamestate.states[name] = new_entry
 end
@@ -35,10 +29,7 @@ function gamestate.switch(name, objects)
     end
     gamestate.current = gamestate.states[name]
     assign(love, gamestate.current)
-    gamestate.current.load()
-    if objects then
-        utils.table_merge(gamestate.current.objects, objects)
-    end
+    gamestate.current.load(objects)
 end
 
 return gamestate

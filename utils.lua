@@ -14,6 +14,16 @@ function utils.table_merge(t1, t2)
 	end
 end
 
+function utils.array_append(t1, t2)
+	if t1 and t2 then
+		for key, value in ipairs(t2) do
+			t1[key + #t1] = value
+		end
+	else
+		print("ERROR: try to append nil table")
+	end
+end
+
 function utils.check_collision(x1,y1,w1,h1, x2,y2,w2,h2)
   return x1 < x2+w2 and
          x2 < x1+w1 and
