@@ -1,11 +1,10 @@
 local gamestate = require "gamestate"
-local menu = require "menu"
-local game = require "game"
 
 function love.load()
+    -- register the states with the gamestate library
+    gamestate.register("menu", require "menu")
+    gamestate.register("game", require "game")
 
-    gamestate.register("menu", menu)
-    gamestate.register("game", game)
-
+    -- go to state menu
     gamestate.switch("menu")
 end
