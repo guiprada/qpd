@@ -4,10 +4,10 @@ local player = require "player"
 local particle = require "particle"
 
 local menu = {}
-
+menu.font = love.graphics.newFont("fonts/PressStart2P-Regular.ttf", 20)
 menu.text = [[
-    'enter' to start game
-    'esc' to exit
+'enter' to start game
+'esc' to exit
 ]]
 
 function menu.load(this_player)
@@ -17,14 +17,16 @@ function menu.load(this_player)
     menu.player = this_player or player.new()
 
     menu.particles = {}
-    for i=1,20,1 do
+    for i=1,5000,1 do
         menu.particles[i] = particle.new()
     end
 end
 
 function menu.draw()
     love.graphics.setColor(1,1,1)
-    love.graphics.printf(menu.text, 0, 3*menu.height/4, menu.width, "center")
+    love.graphics.printf(menu.text, menu.font, 0, 3*menu.height/4, menu.width, "center")
+    love.graphics.setColor(1,0,0)
+    love.graphics.printf(love.timer.getFPS(), 0, menu.height-20, menu.width, "right")
     for i=1,20,1 do
         menu.particles[i]:draw()
     end

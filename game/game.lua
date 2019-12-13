@@ -1,6 +1,9 @@
 local gamestate = require "gamestate"
 local game = {}
 
+local width = love.graphics.getWidth()
+local height = love.graphics.getHeight()
+
 function game.load(player)
     game.player = player
     game.player:stop()
@@ -8,6 +11,10 @@ end
 
 function game.draw()
     game.player:draw()
+
+    --fps
+    love.graphics.setColor(1,0,0)
+    love.graphics.printf(love.timer.getFPS(), 0, height-20, width, "right")
 end
 
 function game.update(dt)
