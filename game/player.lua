@@ -42,7 +42,7 @@ function player.new()
 end
 
 function player:draw()
-    --love.graphics.printf("player", 0, 300, 300, "center")
+    love.graphics.setColor(1, 1, 1)
     love.graphics.draw(self.mesh, self.x, self.y)
 end
 

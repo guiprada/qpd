@@ -16,7 +16,6 @@ end
 
 function game.keypressed(key, scancode, isrepeat)
     if key == "escape" then
-        print(game.objects)
         gamestate.switch("menu", game.player)
     elseif key == "left" then
         game.player:moving_left()
