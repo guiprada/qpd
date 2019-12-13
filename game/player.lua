@@ -5,24 +5,64 @@ local PLAYER_SPEED_Y = 100
 
 local AIR_RESISTANCE_FACTOR = 80
 
-local vertices = {
--- pos_x,pos_y, texture_x, texture_y, color_r, color_g, color_b, alpha
-	{0, 0,  0,0, 0,0.2,0.2,1.0},
-	{20,0,  0,0, 0,1.0,0.2,1.0},
-	{20,20, 0,0, 0,0.2,1.0,1.0},
+local width = love.graphics.getWidth()
+local height = love.graphics.getHeight()
 
-    {0, 0,  0,0, 0,0.2,0.2,1.0},
-	{0,20,  0,0, 0,1.0,0.2,1.0},
-	{20,20, 0,0, 0,0.2,1.0,1.0},
+local body_vertices = {
+-- pos_x,pos_y, texture_x, texture_y, color_r, color_g, color_b, alpha
+	{-20, -20,    0, 0,    0.8, 0.8, 1.0, 1.0},
+	{-20,  20,    0, 0,    0.8, 0.8, 1.0, 1.0},
+	{ 20,   0,    0, 0,    0.8, 0.8, 1.0, 1.0},
 }
 
-local mesh = love.graphics.newMesh(vertices, "triangles", "static")
+local wing_vertices = {
+-- pos_x,pos_y, texture_x, texture_y, color_r, color_g, color_b, alpha
+	{ -12, -12,    0, 0,    1.0, 0.3, 0.3, 1.0},
+	{ -12,  12,    0, 0,    1.0, 0.3, 0.3, 1.0},
+	{  12,   0,    0, 0,    1.0, 0.3, 0.3, 1.0},
+}
 
-function player.new()
+local cockpit_vertices = {
+-- pos_x,pos_y, texture_x, texture_y, color_r, color_g, color_b, alpha
+	{ -6, -6,    0, 0,    0.3, 0.6, 1.0, 1.0},
+	{ -6,  6,    0, 0,    0.3, 0.6, 1.0, 1.0},
+	{  6,  6,    0, 0,    0.3, 0.6, 1.0, 1.0},
+	{  6, -6,    0, 0,    0.3, 0.6, 1.0, 1.0},
+}
+
+
+
+local body_mesh = love.graphics.newMesh(body_vertices, "triangles", "static")
+local wing_mesh = love.graphics.newMesh(wing_vertices, "triangles", "static")
+local cockpit_mesh = love.graphics.newMesh(cockpit_vertices, "fan", "static")
+
+function player.new(x, y)
     local o = {}
-    o.mesh = mesh
-    o.x = 300
-    o.y = 300
+
+	o.x = x or (width/2)
+	o.y = y or (height/2)
+	o.rotation = 0
+
+    o.body = body_mesh
+    o.body_x = 0
+    o.body_y = 0
+	o.body_rotation = 0
+
+	o.u_wing = wing_mesh
+	o.u_wing_x = -15
+	o.u_wing_y = -20
+	o.u_wing_rotation = 0
+
+	o.d_wing = wing_mesh
+	o.d_wing_x = -15
+	o.d_wing_y =  20
+	o.d_wing_rotation = 0
+
+	o.cockpit = cockpit_mesh
+	o.cockpit_x = -5
+	o.cockpit_y = 0
+	o.cockpit_rotation = 0
+
     o.speed_x = 0
     o.speed_y = 0
     o.is_moving_x = false
@@ -38,12 +78,26 @@ function player.new()
     o.slow_stop_x = player.slow_stop_x
     o.slow_stop_y = player.slow_stop_y
     o.stop = player.stop
+
     return o
 end
 
 function player:draw()
-    love.graphics.setColor(1, 1, 1)
-    love.graphics.draw(self.mesh, self.x, self.y)
+	-- body
+	love.graphics.setColor(1, 1, 1)
+    love.graphics.draw(self.body, self.x + self.body_x, self.y + self.body_y, self.rotation + self.body_rotation)
+
+	-- u_wing
+	love.graphics.setColor(1, 1, 1)
+    love.graphics.draw(self.u_wing, self.x + self.u_wing_x, self.y + self.u_wing_y, self.rotation + self.u_wing_rotation)
+
+	-- d_wing
+	love.graphics.setColor(1, 1, 1)
+    love.graphics.draw(self.d_wing, self.x + self.d_wing_x, self.y + self.d_wing_y, self.rotation + self.d_wing_rotation)
+
+	-- cockpit
+	love.graphics.setColor(1, 1, 1)
+    love.graphics.draw(self.cockpit, self.x + self.cockpit_x, self.y + self.cockpit_y, self.rotation + self.cockpit_rotation)
 end
 
 function player:update(dt)
