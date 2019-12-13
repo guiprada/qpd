@@ -14,7 +14,7 @@ function game.draw()
 
     --fps
     love.graphics.setColor(1,0,0)
-    love.graphics.printf(love.timer.getFPS(), 0, height-20, width, "right")
+    love.graphics.printf(love.timer.getFPS(), 0, height-12, width, "right")
 end
 
 function game.update(dt)
