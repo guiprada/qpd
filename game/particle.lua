@@ -9,7 +9,7 @@ local PARTICLE_MAX_SIZE = 5
 
 function particle.new(max_size)
 	local o = {}
-	o.max_size = max_size or PARTICLE_MAX_SIZE
+	o.max_size = love.math.random(1, max_size or PARTICLE_MAX_SIZE)
 
 	o.update = particle.update
 	o.draw = particle.draw
