@@ -173,14 +173,14 @@ function player:update(dt)
 		self.speed_y = self.speed_y + self.accel_y*dt - air_resistance
 		if self.speed_y > PLAYER_MAX_SPEED_Y then
 			self.speed_y = PLAYER_MAX_SPEED_Y
-		elseif self.speed_y < 0 then
+		elseif self.speed_y < 0 then --mudou de sinal
 			self.speed_y = 0
 		end
 	elseif self.speed_y < 0 then
 		self.speed_y = self.speed_y + self.accel_y*dt + air_resistance
 		if -self.speed_y > PLAYER_MAX_SPEED_Y then
 			self.speed_y = -PLAYER_MAX_SPEED_Y
-		elseif self.speed_y > 0 then
+		elseif self.speed_y > 0 then --mudou de sinal
 			self.speed_y = 0
 		end
 	else

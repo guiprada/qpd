@@ -15,7 +15,8 @@ menu.title_font = love.graphics.newFont("fonts/PressStart2P-Regular.ttf", 50)
 menu.title_font_back = love.graphics.newFont("fonts/PressStart2P-Regular.ttf", 51)
 
 menu.title = [[
-Intergalatic Farmer
+Intergalatic
+Farmer
 ]]
 menu.text = [[
 'enter' to start game
