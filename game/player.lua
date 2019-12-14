@@ -31,10 +31,63 @@ local cockpit_vertices = {
 }
 
 
-
 local body_mesh = love.graphics.newMesh(body_vertices, "triangles", "static")
 local wing_mesh = love.graphics.newMesh(wing_vertices, "triangles", "static")
 local cockpit_mesh = love.graphics.newMesh(cockpit_vertices, "fan", "static")
+
+local position_idle = {
+	body_x = 0,
+	body_y = 0,
+	body_rotation = 0,
+
+	u_wing_x =  -15,
+	u_wing_y =  -20,
+	u_wing_rotation = 0,
+
+	d_wing_x = -15,
+	d_wing_y =  20,
+	d_wing_rotation = 0,
+
+	cockpit_x = -5,
+	cockpit_y = 0,
+	cockpit_rotation = 0
+}
+
+local position_trust = {
+	body_x = 0,
+	body_y = 0,
+	body_rotation = 0,
+
+	u_wing_x =  -20,
+	u_wing_y =  -20,
+	u_wing_rotation = 0,
+
+	d_wing_x = -20,
+	d_wing_y =  20,
+	d_wing_rotation = 0,
+
+	cockpit_x = -5,
+	cockpit_y = 0,
+	cockpit_rotation = 0
+}
+
+function player:assign_position(position)
+	self.body_x = position.body_x
+	self.body_y = position.body_y
+	self.body_rotation = position.body_rotation
+
+	self.u_wing_x = position.u_wing_x
+	self.u_wing_y = position.u_wing_y
+	self.u_wing_rotation = position.u_wing_rotation
+
+	self.d_wing_x = position.d_wing_x
+	self.d_wing_y =  position.d_wing_y
+	self.d_wing_rotation = position.d_wing_rotation
+
+	self.cockpit_x = position.cockpit_x
+	self.cockpit_y = position.cockpit_y
+	self.cockpit_rotation = position.cockpit_rotation
+end
 
 function player.new(x, y)
     local o = {}
@@ -43,33 +96,19 @@ function player.new(x, y)
 	o.y = y or (height/2)
 	o.rotation = 0
 
-    o.body = body_mesh
-    o.body_x = 0
-    o.body_y = 0
-	o.body_rotation = 0
-
+	o.body = body_mesh
 	o.u_wing = wing_mesh
-	o.u_wing_x = -15
-	o.u_wing_y = -20
-	o.u_wing_rotation = 0
-
 	o.d_wing = wing_mesh
-	o.d_wing_x = -15
-	o.d_wing_y =  20
-	o.d_wing_rotation = 0
-
 	o.cockpit = cockpit_mesh
-	o.cockpit_x = -5
-	o.cockpit_y = 0
-	o.cockpit_rotation = 0
 
-    o.speed_x = 0
+
+	o.speed_x = 0
     o.speed_y = 0
     o.is_moving_x = false
     o.is_moving_y = false
 
     -- callbacks
-    o.draw = player.draw
+	o.draw = player.draw
     o.update = player.update
     o.moving_left = player.moving_left
     o.moving_right = player.moving_right
@@ -78,7 +117,9 @@ function player.new(x, y)
     o.slow_stop_x = player.slow_stop_x
     o.slow_stop_y = player.slow_stop_y
     o.stop = player.stop
+	o.assign_position = player.assign_position
 
+	o:assign_position(position_idle)
     return o
 end
 
@@ -134,6 +175,7 @@ function player:moving_left()
 end
 
 function player:moving_right()
+	self:assign_position(position_trust)
     self.is_moving_x = true
     self.speed_x = PLAYER_SPEED_X
 end
@@ -149,6 +191,7 @@ function player:moving_down()
 end
 
 function player:slow_stop_x()
+	self:assign_position(position_idle)
     self.is_moving_x = false
 end
 
