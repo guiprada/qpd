@@ -3,6 +3,8 @@ local gamestate = require "gamestate"
 local player = require "player"
 local particle = require "particle"
 
+local N_PARTICLES = 250
+
 local menu = {}
 
 local width = love.graphics.getWidth()
@@ -21,17 +23,20 @@ menu.text = [[
 ]]
 
 function menu.load(this_player)
-
-
     menu.player = this_player or player.new()
 
     menu.particles = {}
-    for i=1,500,1 do
+    for i=1,N_PARTICLES,1 do
         menu.particles[i] = particle.new()
     end
 end
 
 function menu.draw()
+    --particles
+    for i=1,N_PARTICLES,1 do
+        menu.particles[i]:draw()
+    end
+
     --title
     love.graphics.setColor(1, 1, 0)
     love.graphics.printf(menu.title, menu.title_font_back, 0, height/4, width, "center" )
@@ -46,14 +51,11 @@ function menu.draw()
     love.graphics.setColor(1, 0, 0)
     love.graphics.printf(love.timer.getFPS(), 0, height-12, width, "right")
 
-    --particles
-    for i=1,20,1 do
-        menu.particles[i]:draw()
-    end
+
 end
 
 function menu.update(dt)
-    for i=1,20,1 do
+    for i=1,N_PARTICLES,1 do
         menu.particles[i]:update(dt)
     end
 end

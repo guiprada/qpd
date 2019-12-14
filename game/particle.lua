@@ -7,9 +7,11 @@ local PARTICLE_MAX_DURATION = 2
 local PARTICLE_MIN_DURATION = 0.6
 local PARTICLE_MAX_SIZE = 5
 
-function particle.new(max_size)
+function particle.new(camera)
 	local o = {}
-	o.max_size = love.math.random(1, max_size or PARTICLE_MAX_SIZE)
+	o.max_size = love.math.random(1,PARTICLE_MAX_SIZE)
+
+	o.camera = camera or nil
 
 	o.update = particle.update
 	o.draw = particle.draw
@@ -23,7 +25,14 @@ function particle:reset()
 	self.timer = love.math.random(PARTICLE_MIN_DURATION, PARTICLE_MAX_DURATION)
 	self.max_timer = self.timer
 
-	self.x = love.math.random(1, width)
+	local drift_x = 0
+
+	if (self.camera) then
+		drift_x = -self.camera.x
+	end
+
+	self.x = drift_x + love.math.random( 1, width)
+	print(self.x)
 	self.y =  love.math.random(1, height)
 
 	self.color_r = love.math.random()

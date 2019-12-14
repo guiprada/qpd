@@ -1,6 +1,7 @@
 local player = {}
 
-local PLAYER_SPEED_X = 60
+local PLAYER_MAX_SPEED_X = 60
+local PLAYER_MIN_SPEED_X = 30
 local PLAYER_SPEED_Y = 100
 
 local AIR_RESISTANCE_FACTOR = 80
@@ -156,12 +157,12 @@ function player:update(dt)
     if not self.is_moving_x then
         local distance = dt * self.speed_x
         local air_resistance = dt * AIR_RESISTANCE_FACTOR
-        if self.speed_x > 0 and self.speed_x > air_resistance then
+        if self.speed_x > PLAYER_MIN_SPEED_X and self.speed_x - air_resistance > PLAYER_MIN_SPEED_X then
             self.speed_x = self.speed_x - air_resistance
-        elseif self.speed_x < 0 and self.speed_x < air_resistance then
+        elseif self.speed_x < PLAYER_MIN_SPEED_X and self.speed_x +  air_resistance < -PLAYER_MIN_SPEED_X then
             self.speed_x = self.speed_x + air_resistance
         else
-            self.speed_x = 0
+            self.speed_x = PLAYER_MIN_SPEED_X
         end
     end
 
@@ -171,13 +172,13 @@ end
 
 function player:moving_left()
     self.is_moving_x = true
-    self.speed_x = -PLAYER_SPEED_X
+    self.speed_x = -PLAYER_MAX_SPEED_X
 end
 
 function player:moving_right()
 	self:assign_position(position_trust)
     self.is_moving_x = true
-    self.speed_x = PLAYER_SPEED_X
+    self.speed_x = PLAYER_MAX_SPEED_X
 end
 
 function player:moving_up()
@@ -201,10 +202,10 @@ end
 
 function player:stop()
     self.is_moving_x = false
-    self.speed_x = 0
+    self.speed_x = PLAYER_MIN_SPEED_X
 
     self.is_moving_y = false
-    self.speed_y = 0
+    self.speed_y = PLAYER_MIN_SPEED_X
 end
 
 return player

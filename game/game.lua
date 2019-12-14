@@ -1,4 +1,9 @@
 local gamestate = require "gamestate"
+local camera = require "camera"
+local particle = require "particle"
+
+local N_PARTICLES = 500
+
 local game = {}
 
 local width = love.graphics.getWidth()
@@ -6,18 +11,44 @@ local height = love.graphics.getHeight()
 
 function game.load(player)
     game.player = player
+    game.player.x = 100
+    game.player.y = height/2
     game.player:stop()
+
+    game.camera = camera.new()
+    game.camera.x = 0
+    game.camera.speed_x = -30
+
+    game.particles = {}
+    for i=1,N_PARTICLES,1 do
+        game.particles[i] = particle.new(game.camera)
+    end
 end
 
 function game.draw()
-    game.player:draw()
-
     --fps
     love.graphics.setColor(1,0,0)
     love.graphics.printf(love.timer.getFPS(), 0, height-12, width, "right")
+
+    game.camera:set()
+
+    --particles
+    for i=1,N_PARTICLES,1 do
+        game.particles[i]:draw()
+    end
+
+    game.player:draw()
+
+
 end
 
 function game.update(dt)
+    game.camera:update(dt)
+
+    for i=1,N_PARTICLES,1 do
+        game.particles[i]:update(dt)
+    end
+
     game.player:update(dt)
 end
 
