@@ -1,10 +1,12 @@
 local player = {}
 
-local PLAYER_MAX_SPEED_X = 100
+local PLAYER_MAX_SPEED_X = 500
 local PLAYER_MIN_SPEED_X = 50
-local PLAYER_SPEED_Y = 100
+local PLAYER_MAX_SPEED_Y = 120
+local PLAYER_ACCEL_X = 200
+local PLAYER_ACCEL_Y = 200
 
-local AIR_RESISTANCE_FACTOR = 80
+local AIR_RESISTANCE_FACTOR = 50
 
 local width = love.graphics.getWidth()
 local height = love.graphics.getHeight()
@@ -105,8 +107,8 @@ function player.new(x, y)
 
 	o.speed_x = 0
     o.speed_y = 0
-    o.is_moving_x = false
-    o.is_moving_y = false
+	o.accel_x = 0
+    o.accel_y = 0
 
     -- callbacks
 	o.draw = player.draw
@@ -143,69 +145,70 @@ function player:draw()
 end
 
 function player:update(dt)
-    if not self.is_moving_y then
-        local distance = dt * self.speed_y
-        local air_resistance = dt * AIR_RESISTANCE_FACTOR
-        if self.speed_y > 0 and self.speed_y > air_resistance then
-            self.speed_y = self.speed_y - air_resistance
-        elseif self.speed_y < 0 and self.speed_y < air_resistance then
-            self.speed_y = self.speed_y + air_resistance
-        else
-            self.speed_y = 0
-        end
-    end
-    if not self.is_moving_x then
-        local distance = dt * self.speed_x
-        local air_resistance = dt * AIR_RESISTANCE_FACTOR
-        if self.speed_x > PLAYER_MIN_SPEED_X and self.speed_x - air_resistance > PLAYER_MIN_SPEED_X then
-            self.speed_x = self.speed_x - air_resistance
-        -- elseif self.speed_x < PLAYER_MIN_SPEED_X and self.speed_x +  air_resistance < -PLAYER_MIN_SPEED_X then
-        --     self.speed_x = self.speed_x + air_resistance
-        else
-            self.speed_x = PLAYER_MIN_SPEED_X
-        end
-    end
+	local air_resistance = dt * AIR_RESISTANCE_FACTOR
+
+	self.speed_x = self.speed_x + self.accel_x*dt - air_resistance
+	if self.speed_x > PLAYER_MAX_SPEED_X then self.speed_x = PLAYER_MAX_SPEED_X
+	elseif self.speed_x < PLAYER_MIN_SPEED_X then self.speed_x = PLAYER_MIN_SPEED_X end
+
+	if self.speed_y > 0 then
+		self.speed_y = self.speed_y + self.accel_y*dt - air_resistance
+		if self.speed_y > PLAYER_MAX_SPEED_Y then
+			self.speed_y = PLAYER_MAX_SPEED_Y
+		end
+	else
+		self.speed_y = self.speed_y + self.accel_y*dt + air_resistance
+		if -self.speed_y > PLAYER_MAX_SPEED_Y then self.speed_y = -PLAYER_MAX_SPEED_Y end
+	end
+
 
     self.x = self.x + self.speed_x*dt
     self.y = self.y + self.speed_y*dt
+
+	if self.y > height then
+		self.y = height
+		self.accel_y = 0
+		self.speed_y = 0
+	elseif self.y < 0 then
+		self.y = 0
+		self.accel_y = 0
+		self.speed_y = 0
+	end
+
 end
 
 function player:moving_left()
-    self.is_moving_x = true
-    self.speed_x = PLAYER_MIN_SPEED_X
+    self.accel_x = -PLAYER_ACCEL_X
 end
 
 function player:moving_right()
 	self:assign_position(position_trust)
-    self.is_moving_x = true
-    self.speed_x = PLAYER_MAX_SPEED_X
+	self.accel_x = PLAYER_ACCEL_X
 end
 
 function player:moving_up()
-    self.is_moving_y = true
-    self.speed_y = -PLAYER_SPEED_Y
+    self.accel_y = -PLAYER_ACCEL_Y
 end
 
 function player:moving_down()
-    self.is_moving_y = true
-    self.speed_y = PLAYER_SPEED_Y
+    self.accel_y = PLAYER_ACCEL_Y
 end
 
 function player:slow_stop_x()
 	self:assign_position(position_idle)
-    self.is_moving_x = false
+	self.accel_x = 0
 end
 
 function player:slow_stop_y()
-    self.is_moving_y = false
+    self.accel_y = 0
 end
 
 function player:stop()
-    self.is_moving_x = false
     self.speed_x = PLAYER_MIN_SPEED_X
+	self.speed_y = 0
+	self.accel_x = 0
+	self.accel_y = 0
 
-    self.is_moving_y = false
-    self.speed_y = PLAYER_MIN_SPEED_X
 end
 
 return player

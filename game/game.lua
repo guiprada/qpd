@@ -30,6 +30,14 @@ function game.draw()
     love.graphics.setColor(1,0,0)
     love.graphics.printf(love.timer.getFPS(), 0, height-12, width, "right")
 
+    --player.speed_x
+    love.graphics.setColor(1,1,0)
+    love.graphics.printf(math.floor(game.player.speed_x), 0, height-26, width, "right")
+
+    --player.speed_y
+    love.graphics.setColor(1,1,0)
+    love.graphics.printf(math.floor(game.player.speed_y), 0, height-40, width, "right")
+
     game.camera:set()
 
     --particles
@@ -44,6 +52,7 @@ end
 
 function game.update(dt)
     game.camera.speed_x = -game.player.speed_x
+
     game.camera:update(dt)
 
     for i=1,N_PARTICLES,1 do
