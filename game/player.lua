@@ -74,6 +74,24 @@ local position_trust = {
 	cockpit_rotation = 0
 }
 
+local position_brake = {
+	body_x = 0,
+	body_y = 0,
+	body_rotation = 0,
+
+	u_wing_x =  -10,
+	u_wing_y =  -20,
+	u_wing_rotation = 0,
+
+	d_wing_x = -10,
+	d_wing_y =  20,
+	d_wing_rotation = 0,
+
+	cockpit_x = -5,
+	cockpit_y = 0,
+	cockpit_rotation = 0
+}
+
 function player:assign_position(position)
 	self.body_x = position.body_x
 	self.body_y = position.body_y
@@ -155,12 +173,31 @@ function player:update(dt)
 		self.speed_y = self.speed_y + self.accel_y*dt - air_resistance
 		if self.speed_y > PLAYER_MAX_SPEED_Y then
 			self.speed_y = PLAYER_MAX_SPEED_Y
+		elseif self.speed_y < 0 then
+			self.speed_y = 0
+		end
+	elseif self.speed_y < 0 then
+		self.speed_y = self.speed_y + self.accel_y*dt + air_resistance
+		if -self.speed_y > PLAYER_MAX_SPEED_Y then
+			self.speed_y = -PLAYER_MAX_SPEED_Y
+		elseif self.speed_y > 0 then
+			self.speed_y = 0
 		end
 	else
-		self.speed_y = self.speed_y + self.accel_y*dt + air_resistance
-		if -self.speed_y > PLAYER_MAX_SPEED_Y then self.speed_y = -PLAYER_MAX_SPEED_Y end
+		self.speed_y = self.speed_y + self.accel_y*dt
 	end
 
+	-- if self.speed_y > 0 then
+	-- 	self.speed_y = self.speed_y + self.accel_y*dt - air_resistance
+	-- 	if self.speed_y > PLAYER_MAX_SPEED_Y then
+	-- 		self.speed_y = PLAYER_MAX_SPEED_Y
+	-- 	end
+	-- else
+	-- 	self.speed_y = self.speed_y + self.accel_y*dt + air_resistance
+	-- 	if -self.speed_y > PLAYER_MAX_SPEED_Y then
+	-- 		self.speed_y = -PLAYER_MAX_SPEED_Y
+	-- 	end
+	-- end
 
     self.x = self.x + self.speed_x*dt
     self.y = self.y + self.speed_y*dt
@@ -178,6 +215,7 @@ function player:update(dt)
 end
 
 function player:moving_left()
+	self:assign_position(position_brake)
     self.accel_x = -PLAYER_ACCEL_X
 end
 
