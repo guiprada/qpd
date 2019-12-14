@@ -2,7 +2,7 @@ local gamestate = require "gamestate"
 local camera = require "camera"
 local particle = require "particle"
 
-local N_PARTICLES = 500
+local N_PARTICLES = 250
 
 local game = {}
 
@@ -43,6 +43,7 @@ function game.draw()
 end
 
 function game.update(dt)
+    game.camera.speed_x = -game.player.speed_x
     game.camera:update(dt)
 
     for i=1,N_PARTICLES,1 do

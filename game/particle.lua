@@ -32,7 +32,6 @@ function particle:reset()
 	end
 
 	self.x = drift_x + love.math.random( 1, width)
-	print(self.x)
 	self.y =  love.math.random(1, height)
 
 	self.color_r = love.math.random()
