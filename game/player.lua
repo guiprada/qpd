@@ -225,11 +225,19 @@ function player:moving_right()
 end
 
 function player:moving_up()
-    self.accel_y = -PLAYER_ACCEL_Y
+	if self.accel_y == 0 then
+    	self.accel_y = -PLAYER_ACCEL_Y
+	else
+		self.accel_y = 0
+	end
 end
 
 function player:moving_down()
-    self.accel_y = PLAYER_ACCEL_Y
+	if self.accel_y == 0 then
+    	self.accel_y = PLAYER_ACCEL_Y
+	else
+		self.accel_y = 0
+	end
 end
 
 function player:slow_stop_x()
