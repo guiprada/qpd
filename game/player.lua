@@ -1,9 +1,9 @@
 local player = {}
 
-local PLAYER_MAX_SPEED_X = 500
+local PLAYER_MAX_SPEED_X = 3000
 local PLAYER_MIN_SPEED_X = 50
 local PLAYER_MAX_SPEED_Y = 120
-local PLAYER_ACCEL_X = 200
+local PLAYER_ACCEL_X = 1500
 local PLAYER_ACCEL_Y = 1000
 
 local AIR_RESISTANCE_FACTOR = 50
@@ -56,7 +56,7 @@ local position_idle = {
 	cockpit_rotation = 0
 }
 
-local position_trust = {
+local position_thrust = {
 	body_x = 0,
 	body_y = 0,
 	body_rotation = 0,
@@ -215,17 +215,27 @@ function player:update(dt)
 end
 
 function player:moving_left()
-	self:assign_position(position_brake)
-    self.accel_x = -PLAYER_ACCEL_X
+	if self.accel_x <=0 then
+		self:assign_position(position_brake)
+	    self.accel_x = -PLAYER_ACCEL_X
+	else
+		self:assign_position(position_idle)
+		self.accel_x = 0
+	end
 end
 
 function player:moving_right()
-	self:assign_position(position_trust)
-	self.accel_x = PLAYER_ACCEL_X
+	if self.accel_x >=0 then
+		self:assign_position(position_thrust)
+		self.accel_x = PLAYER_ACCEL_X
+	else
+		self:assign_position(position_idle)
+		self.accel_x = 0
+	end
 end
 
 function player:moving_up()
-	if self.accel_y == 0 then
+	if self.accel_y <= 0 then
     	self.accel_y = -PLAYER_ACCEL_Y
 	else
 		self.accel_y = 0
@@ -233,7 +243,7 @@ function player:moving_up()
 end
 
 function player:moving_down()
-	if self.accel_y == 0 then
+	if self.accel_y >= 0 then
     	self.accel_y = PLAYER_ACCEL_Y
 	else
 		self.accel_y = 0
