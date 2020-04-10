@@ -1,47 +1,56 @@
-local utils = require "utils"
+-- Guilherme Cunha Prada 2020
+--------------------------------------------------------------------------------
+
 local gamestate = {}
+
+local utils = require "utils"
 
 gamestate.states = {}
 
-local null_func = function() end
+gamestate.callback_list = {
+    "load",
+    "unload",
+    "update",
+    "draw",
+    "keypressed",
+    "keyreleased",
+    "displayrotated",
+    "errorhandler",
+    "lowmemory",
+    "quit",
+    "run",
+    "threaderror",
+    "directorydropped",
+    "filedropped",
+    "focus",
+    "mousefocus",
+    "resize",
+    "visible",
+    "textedited",
+    "textinput",
+    "mousemoved",
+    "mousepressed",
+    "mousereleased",
+    "wheelmoved",
+    "gamepadaxis",
+    "gamepadpressed",
+    "gamepadreleased",
+    "joystickadded",
+    "joystickaxis",
+    "joystickhat",
+    "joystickpressed",
+    "joystickreleased",
+    "joystickremoved",
+    "touchmoved",
+    "touchpressed",
+    "touchreleased",
+    "displayrotated"
+}
 
 local function assign(dest, callbacks)
-    dest.load = callbacks.load or null_func
-    dest.unload = callbacks.unload or null_func
-    dest.update = callbacks.update or null_func
-    dest.draw = callbacks.draw or null_func
-    dest.keypressed = callbacks.keypressed or null_func
-    dest.keyreleased = callbacks.keyreleased or null_func
-    dest.displayrotated = callbacks.displayrotated or null_func
-    dest.errorhandler = callbacks.errorhandler or null_func
-    dest.lowmemory = callbacks.lowmemory or null_func
-    dest.quit = callbacks.quit or null_func
-    dest.run = callbacks.run or null_func
-    dest.threaderror = callbacks.threaderror or null_func
-    dest.directorydropped = callbacks.directorydropped or null_func
-    dest.filedropped = callbacks.filedropped or null_func
-    dest.focus = callbacks.focus or null_func
-    dest.mousefocus = callbacks.mousefocus or null_func
-    dest.resize = callbacks.resize or null_func
-    dest.visible = callbacks.visible or null_func
-    dest.textedited = callbacks.textedited or null_func
-    dest.textinput = callbacks.textinput or null_func
-    dest.mousemoved = callbacks.mousemoved or null_func
-    dest.mousepressed = callbacks.mousepressed or null_func
-    dest.mousereleased = callbacks.mousereleased or null_func
-    dest.wheelmoved = callbacks.wheelmoved or null_func
-    dest.gamepadaxis = callbacks.gamepadaxis or null_func
-    dest.gamepadpressed = callbacks.gamepadpressed or null_func
-    dest.gamepadreleased = callbacks.gamepadreleased or null_func
-    dest.joystickadded = callbacks.joystickadded or null_func
-    dest.joystickaxis = callbacks.joystickaxis or null_func
-    dest.joystickhat = callbacks.joystickhat or null_func
-    dest.joystickpressed = callbacks.joystickpressed or null_func
-    dest.joystickreleased = callbacks.joystickreleased or null_func
-    dest.joystickremoved = callbacks.joystickremoved or null_func
-    dest.touchmoved = callbacks.touchmoved or null_func
-    dest.touchpressed = callbacks.touchpressed or null_func
-    dest.touchreleased = callbacks.touchreleased or null_func
+    for _, callback in pairs(gamestate.callback_list) do
+        dest[callback] = callbacks[callback] or nil
+    end
 end
 
 function gamestate.register(name, callbacks)
@@ -50,13 +59,14 @@ function gamestate.register(name, callbacks)
     gamestate.states[name] = new_entry
 end
 
-function gamestate.switch(name, object)
-    if gamestate.current then
+function gamestate.switch(name, args)
+    if gamestate.current and gamestate.current.unload then
         gamestate.current.unload()
     end
+
     gamestate.current = gamestate.states[name]
     assign(love, gamestate.current)
-    gamestate.current.load(object)
+    gamestate.current.load(args)
 end
 
 return gamestate
