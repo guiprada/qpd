@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 # inflate.sh
-# Creates a new LÖVE2D project from the qpd template.
+# Places qpd template files into an existing or new project directory.
+# Non-destructive: never overwrites files that already exist.
 #
 # Usage:
 #   ./inflate.sh <target_dir>
@@ -11,19 +12,19 @@ TARGET="$1"
 if [ -z "$TARGET" ]; then
     echo "Usage: ./inflate.sh <target_dir>"
     echo ""
-    echo "Creates a new LÖVE2D / qpd project at <target_dir>."
+    echo "Places qpd framework files into <target_dir>."
+    echo "Existing files are never overwritten."
     exit 1
 fi
 
 SRC="$(cd "$(dirname "$0")" && pwd)"
 
-echo "Inflating qpd project to: $TARGET"
+echo "Inflating qpd into: $TARGET"
 
-# Copy template scaffolding
+# -n = no-clobber (never overwrite existing files)
 mkdir -p "$TARGET"
-cp -r "$SRC/template/." "$TARGET/"
+cp -rn "$SRC/template/." "$TARGET/"
 
-# Copy qpd library into project/qpd/
 mkdir -p "$TARGET/qpd"
 for ITEM in \
     ann.lua \
@@ -53,17 +54,11 @@ for ITEM in \
     templates \
     widgets
 do
-    cp -r "$SRC/$ITEM" "$TARGET/qpd/"
+    cp -rn "$SRC/$ITEM" "$TARGET/qpd/"
 done
 
 echo ""
-echo "Done! Your new project is at: $TARGET"
+echo "Done. Existing files were not modified."
 echo ""
 echo "To run:"
-echo "  cd $TARGET"
-echo "  love ."
-echo ""
-echo "Tip: to use qpd as a git submodule instead of a copy:"
-echo "  git init $TARGET"
-echo "  cd $TARGET"
-echo "  git submodule add https://github.com/guiprada/qpd qpd"
+echo "  cd $TARGET && love ."
