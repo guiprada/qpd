@@ -6,7 +6,7 @@ function love_utils.set_mode(settings)
 	-- love.window.setMode errors out if width or height are present
 	-- so we clone the original settings and remove them
 
-	local new_settings = qpd_table.clone(settings)
+	local new_settings = qpd_table.deep_clone(settings)
 	local width = new_settings.width
 	new_settings.width = nil
 	local height = new_settings.height

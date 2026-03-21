@@ -98,7 +98,7 @@ function _Link_Gene:mutate(mutate_chance, mutate_percentage)
 end
 
 function _Link_Gene:inherit(mutate_chance, mutate_percentage)
-	local clone = qpd_table.clone(self)
+	local clone = qpd_table.deep_clone(self)
 	clone:mutate(mutate_chance, mutate_percentage)
 	return clone
 end
@@ -219,7 +219,7 @@ function _Neuron_Gene:mutate(mutate_chance, mutate_percentage)
 end
 
 function _Neuron_Gene:inherit(mutate_chance, mutate_percentage)
-	local clone = qpd_table.clone(self)
+	local clone = qpd_table.deep_clone(self)
 	clone:mutate(mutate_chance, mutate_percentage)
 	return clone
 end

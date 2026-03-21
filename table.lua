@@ -188,7 +188,7 @@ function qpd_table.write_to_file(this_table, filepath, separator)
 	return err
 end
 
-function qpd_table.clone(source, dest)
+function qpd_table.deep_clone(source, dest)
 	local dest = dest or {}
 
 	local source_metatable = getmetatable(source)
@@ -199,7 +199,7 @@ function qpd_table.clone(source, dest)
 	for k, value in pairs(source) do
 		if(type(value) == "table")then
 			dest[k] = {}
-			qpd_table.clone(value, dest[k])
+			qpd_table.deep_clone(value, dest[k])
 		else
 			dest[k] = value
 		end
