@@ -251,7 +251,7 @@ function ANN:crossover(mom, dad, mutate_chance, mutate_percentage, crossover)
 	setmetatable(son, self)
 
 	for i = 1, #mom do
-		local layer = qpd_table.deep_clone(mom[i])
+		local layer = qpd_table.clone(mom[i])
 		local new_layer = {}
 
 		local crossover_layer

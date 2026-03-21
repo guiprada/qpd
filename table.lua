@@ -146,7 +146,6 @@ function qpd_table.read_from_conf(filepath, separator)
 		new_table = nil
 	else
 		for line in file:lines() do
-			line = line:gsub("\r", "")   -- strip Windows CR so files are portable
 			if line ~= "" then
 				local key, value =  string.match(line, match_string)
 				key = tonumber(key) or key
@@ -162,7 +161,7 @@ function qpd_table.read_from_conf(filepath, separator)
 end
 
 function qpd_table.read_from_string(str)
-	return assert((loadstring or load)("return" .. str))()
+	return assert(loadstring("return" .. str))()
 end
 
 function qpd_table.write_to_file(this_table, filepath, separator)
@@ -189,7 +188,7 @@ function qpd_table.write_to_file(this_table, filepath, separator)
 	return err
 end
 
-function qpd_table.deep_clone(source, dest)
+function qpd_table.clone(source, dest)
 	local dest = dest or {}
 
 	local source_metatable = getmetatable(source)
@@ -200,25 +199,10 @@ function qpd_table.deep_clone(source, dest)
 	for k, value in pairs(source) do
 		if(type(value) == "table")then
 			dest[k] = {}
-			qpd_table.deep_clone(value, dest[k])
+			qpd_table.clone(value, dest[k])
 		else
 			dest[k] = value
 		end
-	end
-
-	return dest
-end
-
-function qpd_table.shallow_clone(source)
-	local dest = {}
-
-	local source_metatable = getmetatable(source)
-	if source_metatable then
-		setmetatable(dest, source_metatable)
-	end
-
-	for k, v in pairs(source) do
-		dest[k] = v
 	end
 
 	return dest
