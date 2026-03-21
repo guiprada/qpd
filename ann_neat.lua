@@ -449,6 +449,30 @@ function _Innovation_manager:get_neuron_innovation_id(x, y)
 	return innovation_id
 end
 
+function _Innovation_manager:get_state()
+	local links_copy = {}
+	for in_id, outs in pairs(self._links) do
+		links_copy[in_id] = {}
+		for out_id, innov_id in pairs(outs) do
+			links_copy[in_id][out_id] = innov_id
+		end
+	end
+	local neurons_copy = {}
+	for x, ys in pairs(self._neurons) do
+		neurons_copy[x] = {}
+		for y, innov_id in pairs(ys) do
+			neurons_copy[x][y] = innov_id
+		end
+	end
+	return { id_count = self._id_count, links = links_copy, neurons = neurons_copy }
+end
+
+function _Innovation_manager:load_state(state)
+	self._id_count = state.id_count
+	self._links    = state.links
+	self._neurons  = state.neurons
+end
+
 function _Innovation_manager:type()
 	return "_Innovation_manager"
 end
@@ -1345,6 +1369,91 @@ end
 
 function ANN:type()
 	return "ANN_neat"
+end
+
+-- ============================================================
+-- Serialization / deserialization (used by population_io)
+-- ============================================================
+
+function _Genome:serialize()
+	local neurons = {}
+	for i, ng in ipairs(self._neurons) do
+		neurons[i] = {
+			id                             = ng:get_id(),
+			neuron_type                    = ng:get_neuron_type(),
+			x                              = ng:get_x(),
+			y                              = ng:get_y(),
+			activation_function_name       = ng._activation_function_name,
+			activation_function_parameters = ng._activation_function_parameters,
+			activation_response            = ng:get_activation_response(),
+			recurrent                      = ng._recurrent,
+			loopback                       = ng._loopback or false,
+		}
+	end
+
+	local links = {}
+	for i, lg in ipairs(self._links) do
+		links[i] = {
+			id               = lg:get_id(),
+			input_neuron_id  = lg:get_input_neuron():get_id(),
+			output_neuron_id = lg:get_output_neuron():get_id(),
+			weight           = lg:get_weight(),
+			enabled          = lg:is_enabled(),
+			recurrent        = lg:is_recurrent(),
+		}
+	end
+
+	return {
+		neurons                                      = neurons,
+		links                                        = links,
+		hidden_layers_activation_function_name       = self._hidden_layers_activation_function_name,
+		hidden_layers_activation_function_parameters = self._hidden_layers_activation_function_parameters,
+	}
+end
+
+function _Genome.from_data(data)
+	local id_to_gene = {}
+	local neurons    = {}
+	for _, nd in ipairs(data.neurons) do
+		local ng = _Neuron_Gene:new(
+			nd.neuron_type,
+			nd.recurrent,
+			nd.activation_response,
+			nd.activation_function_name,
+			nd.activation_function_parameters,
+			nd.id,
+			nd.x,
+			nd.y)
+		if nd.loopback then ng:set_loopback(true) end
+		id_to_gene[nd.id] = ng
+		table.insert(neurons, ng)
+	end
+
+	local links = {}
+	for _, ld in ipairs(data.links) do
+		local in_gene  = id_to_gene[ld.input_neuron_id]
+		local out_gene = id_to_gene[ld.output_neuron_id]
+		local lg = _Link_Gene:new(in_gene, out_gene, ld.weight, ld.id)
+		if not ld.enabled then lg:set_enabled(false) end
+		table.insert(links, lg)
+	end
+
+	return _Genome:new(neurons, links,
+		data.hidden_layers_activation_function_name,
+		data.hidden_layers_activation_function_parameters)
+end
+
+function ANN.get_innovation_state()
+	return Innovation_manager:get_state()
+end
+
+function ANN.load_innovation_state(state)
+	Innovation_manager:load_state(state)
+end
+
+function ANN.from_genome_data(data)
+	local genome = _Genome.from_data(data)
+	return ANN:new(genome)
 end
 
 return ANN
